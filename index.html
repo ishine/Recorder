@@ -26,11 +26,14 @@ pre{
 .pd{
 	padding:0 0 6px 0;
 }
+.btns button{
+	padding: 5px 10px;
+}
 </style>
 
 <script>
 //兼容环境
-var PageLM="2019-01-06 21:38:00";
+var PageLM="2019-4-18 09:31:26";
 
 function BuildHtml(html,o,notEncode,loop){return o||(o={}),html=(null==html?"":html+"").replace(/\{(fn:)?(:)?(.+?)\}/gi,function(a,b,c,code){try{var v=eval(b?code:"o."+code);return v=void 0===v?"":v+"",c||notEncode?v:v}catch(e){return console.log("BuildHtml Fail",a+"\n"+e.stack),""}}),loop&&/\{(fn:)?(.+?)\}/.test(html)&&(html=BuildHtml(html,o,notEncode,loop)),html};
 function RandomKey(){
@@ -38,7 +41,51 @@ function RandomKey(){
 };
 RandomKey.idx=0;
 </script>
-<script src="https://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+
+
+<div>
+	<style>
+		.navItem{
+			display:inline-block;
+			width:40%;
+			max-width:300px;
+			margin-right:20px;
+			vertical-align: top;
+			background:#eee;
+			border-bottom: 5px solid #ccc;
+			color:#666;
+			text-decoration:none;
+			border-radius: 8px;
+			padding: 0 5px 3px;
+		}
+		.navItem.slc{
+			border-bottom: 5px solid #0B1;
+			color:#000;
+		}
+		.navItem:hover{
+			color:#d44;
+		}
+		.navTitle{
+			text-align: center;
+			font-size:18px;
+			font-weight: bold;
+		}
+		.navDesc{
+			font-size:12px;
+		}
+	</style>
+	<a class="navItem slc" href="https://xiangyuecn.github.io/Recorder/">
+		<div class="navTitle">Recorder测试</div>
+		<div class="navDesc">Recorder库使用简单，功能丰富，支持PC、Android，但IOS上仅Safari支持录音</div>
+	</a>
+	
+	<a class="navItem" href="https://jiebian.life/web/h5/github/recordapp.aspx">
+		<div class="navTitle">RecordApp测试</div>
+		<div class="navDesc">RecordApp除Recorder支持的外，IOS上支持微信网页和小程序web-view，但需要后端提供接口</div>
+	</a>
+</div>
+
 
 
 
@@ -59,16 +106,16 @@ RandomKey.idx=0;
 		提示：<span class="typeTips">-</span>
 	</div>
 	<div class="pd">
-		比特率:<input type="text" class="bit" value="16">如：kbps mp3、wav取值8位16位
+		比特率: <input type="text" class="bit" value="16"> kbps，越大音质越好
 	</div>
 	<div class="pd">
-		采样率:<input type="text" class="sample" value="16000">如：mp3标准值，wav任意
+		采样率: <input type="text" class="sample" value="16000"> hz，越大细节越丰富
 	</div>
-	<div class="pd">
+	<div class="pd btns">
 		<button onclick="recopen()">打开录音</button>
 		<button onclick="recclose()">关闭录音</button>
 	</div>
-	<div class="pd">
+	<div class="pd btns">
 		<button onclick="recstart()">录制</button>
 		<button onclick="recstop()">停止</button>
 		
@@ -83,7 +130,7 @@ RandomKey.idx=0;
 	</div>
 	<div class="pd">
 		<button onclick="recstop2()">批量编码</button>
-		<input type="text" class="bits" value="8 to 96 step 8">kbps（wav固定8、16），测试音质用的，除比特率外其他参数可调整
+		<input type="text" class="bits" value="8 to 96 step 8">kbps 测试音质用的，除比特率外其他参数可调整
 	</div>
 	<div class="pd">
 		<div style="height:100px;width:300px;border:1px solid #ccc;box-sizing: border-box;display:inline-block" class="recwave"></div>
@@ -207,7 +254,7 @@ function recstop(batCall){
 	};
 };
 var intp=function(s,len){
-	s=""+s;
+	s=s==null?"-":s+"";
 	if(s.length>=len)return s;
 	return ("_______"+s).substr(-len);
 };
@@ -482,7 +529,14 @@ function loadEngine(input){
 		var engines=input.attr("engine").split(",");
 		var end=function(){
 			var enc=Recorder.prototype["enc_"+type];
-			$(".typeTips").html(!enc?"这个编码器无提示信息":type+"编码器"+(enc.stable?"稳定版":"beta版")+"，"+enc.testmsg);
+			var tips=[!enc?"这个编码器无提示信息":type+"编码器"+(enc.stable?"稳定版":"beta版")+"，"+enc.testmsg];
+			tips.push('<div style="color:green">');
+			tips.push("【使用"+type+"录音需要加载的js文件】：");
+			tips.push("src/recorder-core.js, src/engine/");
+			tips.push(engines.join(".js, src/engine/"));
+			tips.push(".js</div>");
+			
+			$(".typeTips").html(tips.join(""));
 		};
 		if(!Recorder.prototype[type]){
 			reclog("正在加载"+type+"编码器...");
